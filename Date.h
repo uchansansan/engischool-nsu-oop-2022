@@ -41,5 +41,5 @@ class Date
 
   private:
     int day, month, year;
-	int amount[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int amount[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 };
