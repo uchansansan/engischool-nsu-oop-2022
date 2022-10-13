@@ -1,2 +1,10 @@
 # engischool-nsu-oop-2022
-The base repository for the tasks reviewing of the OOP course 2022
+
+Лабораторная 1-3. Компилятор Clang 12.0.5 x86_64-apple-darwin20.6.0
+
+Для реализации арифметических операций, добавила функцию, определяющую, високосный ли год, но привзывать к классу не стала - чтобы не передавать функции лишней информации. Также был добавлен оператор присваивания.
+
+Для компиляции всех файлов в директории в VSCode одновременно, добавить в
+"code-runner.executorMap": {
+    "cpp": "cd $dir && clang++ -std=c++17 *.cpp -o $fileName -o $fileNameWithoutExt & $dir$fileNameWithoutExt",
+}
