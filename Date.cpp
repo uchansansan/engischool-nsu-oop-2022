@@ -12,7 +12,8 @@ Date Date::operator+ (const int& x) const
   
   for (int i = this->month - 1; 
       days > (isLeap(years)?this->amount[i] + 1: 
-      this->amount[i]); i = (i + 1) % 12){
+      this->amount[i]); i = (i + 1) % 12)
+  {
     if (i == 11)
     {
       years += 1;
