@@ -27,7 +27,7 @@ int main()
 
   std::cin >> input;
 
-  PrintString(input);
+  Date::PrintString(input);
 
   return 0;
 }

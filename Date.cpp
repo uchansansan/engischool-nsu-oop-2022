@@ -1,78 +1,91 @@
 #include <iostream>
 #include "Date.h"
 
+constexpr int Date::amount[12];
+constexpr char Date::stringMonth[12][4];
+
 bool isLeap (int year)
 {
-  return year % 400 == 0 || (year % 400 != 0 && year % 100 != 0 && year % 4 ==0);
+  return year % 400 == 0 || (year % 100 != 0 && year % 4 == 0);
+}
+
+Date:: Date()
+  : day(1), month(0), year(0)
+{
+}
+
+Date:: Date(const std::string &x)
+  : Date()
+{
+  int m;
+  std::stringstream(x) >> day >> m >> year;
+  month = m - 1;
+}
+
+Date:: Date(const int &x, const int &y, const int &z)
+  : day(x), month(y - 1), year(z)
+{
+}
+
+Date:: Date(const Date& x)
+  : day(x.day), month(x.month), year(x.year)
+{
 }
 
 Date Date::operator+ (const int& x) const
 {
-  int days = this->day + x, months = this->month, years = this->year;
+  int days = day + x, months = month, years = year;
   
-  for (int i = this->month - 1; 
-      days > (isLeap(years)?this->amount[i] + 1: 
-      this->amount[i]); i = (i + 1) % 12)
+  for (; days > amount[months] + (isLeap(years) && months == 1); months = (months + 1) % 12)
   {
-    if (i == 11)
+    if (months == 11)
     {
       years += 1;
     }
-    days -= (isLeap(years)?this->amount[i] + 1: this->amount[i]);
-    months = months % 12 + 1;
+    days -= amount[months] + (isLeap(years) && months == 1);
   }
 
   return { days, months, years };
 }
 
-Date Date:: operator- (const int& x) const
+Date Date::operator- (const int& x) const
 {
-  int days = this->day - x, months = this->month, years = this->year;
+  int days = day - x, months = month, years = year;
   
-  for (int i = (12 + this->month - 2) % 12; days <= 0; i = (12 + i - 1) % 12)
+  for (months = (12 + months - 1) % 12; days <= 0; months = (12 + months - 1) % 12)
   {
-    if (i + 1 == 12)
+    if (months == 11)
     {
       years -= 1;
     }
-    days += (isLeap(years)?this->amount[i] + 1: this->amount[i]);
-    months = (12 + months) % 12 - 1;
+    days += amount[months] + (isLeap(years) && months == 1);
   }
 
-  return { days, months, years };
+  return { days, (months + 1) % 12, years };
 }
 
-Date Date:: operator= (const Date& x)
-{
-  this->day = x.day;
-  this->month = x.month;
-  this->year = x.year;
-
-  return *this;
-}
-
-Date Date:: operator+= (const int& x) 
+Date Date::operator+= (const int& x) 
 {
   *this = *this + x;
-
+  
   return *this;
 }
 
-Date Date:: operator-= (const int& x)
+Date Date::operator-= (const int& x)
 {
   *this = *this - x;
 
   return *this;
 }
 
-Date Date:: operator++ ()
+Date Date::operator++ ()
 {
   *this += 1;
 
   return *this;
 }
 
-Date Date:: operator++ (int)
+Date Date::operator++ (int)
 {
   Date temp = *this;
 
@@ -81,14 +94,14 @@ Date Date:: operator++ (int)
   return temp;
 }
 
-Date Date:: operator-- ()
+Date Date::operator-- ()
 {
   *this -= 1;
 
   return *this;
 }
 
-Date Date:: operator-- (int)
+Date Date::operator-- (int)
 {
   Date temp = *this;
 
@@ -97,55 +110,53 @@ Date Date:: operator-- (int)
   return temp;
 }
 
-bool Date:: operator== (const Date& x)
+bool Date::operator== (const Date& x) const
 {
-  return this->day == x.day && this->month == x.month && this->year == x.year;
+  return day == x.day && month == x.month && year == x.year;
 }
 
-bool Date:: operator!= (const Date& x)
+bool Date::operator!= (const Date& x) const
 {
   return !(*this == x);
 }
 
-bool Date:: operator< (const Date& x)
+bool Date::operator< (const Date& x) const
 {
-  return (this->year < x.year) || 
-        (this->month < x.month && this->year == x.year) ||
-        (this->day < x.day && this->month == x.month && this->year == x.year);
+  return year < x.year || month < x.month || day < x.day;
 }
 
-bool Date:: operator> (const Date& x)
+bool Date::operator> (const Date& x) const
 {
   return *this != x && !(*this < x);
 }
 
-bool Date:: operator<= (const Date& x)
+bool Date::operator<= (const Date& x) const
 {
   return !(*this > x);
 }
 
-bool Date:: operator>= (const Date& x)
+bool Date::operator>= (const Date& x) const
 {
   return !(*this < x);
 }
 
 std::istream& operator>> (std::istream& stream, Date& x)
 {
-  stream >> x.day >> x.month >> x.year;
+  int month;
+  stream >> x.day >> month >> x.year;
+  x.month = month - 1;
 
   return stream;
 }
 
 std::ostream& operator<< (std::ostream& stream, const Date& x)
 {
-  stream << x.day << ' ' << x.month << ' ' << x.year;
+  stream << x.day << ' ' << x.month + 1 << ' ' << x.year;
   
   return stream;
 }
 
-void PrintString (const Date& x)
+void Date::PrintString (const Date& x)
 {
-  std::string stringMonth[12] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "dec"};
-
-  std::cout << x.day << ' ' << stringMonth[x.month - 1] << ' ' << x.year;
+  std::cout << x.day << ' ' << stringMonth[x.month] << ' ' << x.year;
 }
