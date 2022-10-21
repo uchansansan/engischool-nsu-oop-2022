@@ -1,20 +1,24 @@
 #include "Matrix.h"
+#include <iostream>
 
 Matrix:: Matrix()
   : height(2), width(2)
 {
-  data = new float[height * width];
+  data = new double[height * width];
 }
 
 Matrix:: Matrix(const int &y, const int &x)
   : height(y), width(x)
 {
-  data = new float[height * width];
+  data = new double[height * width];
 }
 
 Matrix:: Matrix(const Matrix &x)
-  : height(x.height), width(x.width), data(x.data)
+  : height(x.height), width(x.width), data(new double[height*width])
 {
+  for(int i = 0; i < width * height; ++i) {
+    data[i] = x.data[i];
+  }
 }
 
 Matrix Matrix::operator+(const int &x) const
@@ -28,11 +32,7 @@ Matrix Matrix::operator+(const int &x) const
 Matrix Matrix::operator+(const Matrix &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] += x.data[i];
-  }
+  temp += x;
 
   return temp;
 }
@@ -40,11 +40,7 @@ Matrix Matrix::operator+(const Matrix &x) const
 Matrix Matrix::operator-(const int &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] -= x;
-  }
+  temp -= x;
 
   return temp;
 }
@@ -52,11 +48,7 @@ Matrix Matrix::operator-(const int &x) const
 Matrix Matrix::operator-(const Matrix &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] -= x.data[i];
-  }
+  temp -= x;
 
   return temp;
 }
@@ -64,23 +56,15 @@ Matrix Matrix::operator-(const Matrix &x) const
 Matrix Matrix::operator*(const int &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] *= x;
-  }
+  temp *= x;
 
   return temp;
 }
 
-Matrix Matrix::operator*(const float &x) const
+Matrix Matrix::operator*(const double &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] *= x;
-  }
+  temp *= x;
 
   return temp;
 }
@@ -88,32 +72,21 @@ Matrix Matrix::operator*(const float &x) const
 Matrix Matrix::operator*(const Matrix &x) const
 {
   Matrix temp = *this;
-
-  for (int i = 0; i < height * width; ++i)
-  {
-    temp.data[i] *= x.data[i];
-  }
+  temp *= x;
 
   return temp;
 }
 
-float* Matrix:: operator[](const int& x) const
+double* Matrix:: operator[](const int& x) const
 {
-  float* line = new float[width];
-
-  for (int i = x * width; i < x * width + width; ++i)
-  {
-    line[i] = data[i];
-  }
-
-  return line;
+  return &data[x];
 }
 
 Matrix& Matrix::operator= (const Matrix &x)
 {
   height = x.height;
   width = x.width;
-  data = new float[width * height];
+  data = new double[width * height];
 
   for (int i = 0; i < width * height; ++i)
   {
@@ -125,24 +98,125 @@ Matrix& Matrix::operator= (const Matrix &x)
 
 Matrix& Matrix::operator+=(const int &x) 
 {
-  Matrix temp = *this;
-
   for (int i = 0; i < height * width; ++i)
   {
-    temp.data[i] += x;
+    data[i] += x;
   }
 
-  return temp;
+  return *this;
 }
 
 Matrix& Matrix::operator+=(const Matrix &x) 
 {
-  Matrix temp = *this;
-
   for (int i = 0; i < height * width; ++i)
   {
-    temp.data[i] += x.data[i];
+    data[i] += x.data[i];
   }
 
-  return temp;
+  return *this;
+}
+
+Matrix& Matrix::operator-=(const int &x)
+{
+  for (int i = 0; i < height * width; ++i)
+  {
+    data[i] -= x;
+  }
+
+  return *this;
+}
+
+Matrix& Matrix::operator-=(const Matrix &x)
+{
+  for (int i = 0; i < height * width; ++i)
+  {
+    data[i] -= x.data[i];
+  }
+
+  return *this;
+}
+
+Matrix& Matrix::operator*=(const int &x)
+{
+  for (int i = 0; i < height * width; ++i)
+  {
+    data[i] *= x;
+  }
+
+  return *this;
+}
+
+Matrix& Matrix::operator*=(const double &x)
+{
+  for (int i = 0; i < height * width; ++i)
+  {
+    data[i] *= x;
+  }
+
+  return *this;
+}
+
+Matrix& Matrix::operator*=(const Matrix &x)
+{
+  for (int i = 0; i < height * width; ++i)
+  {
+    data[i] *= x.data[i];
+  }
+
+  return *this;
+}
+
+bool Matrix::operator== (const Matrix& x) const
+{
+  if (x.height != height || x.width != width)
+  {
+    return false;
+  }
+
+  for (int i = 0; i < width * height; ++i)
+  {
+    if (x.data[i] != data[i])
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool Matrix::operator!= (const Matrix& x) const
+{
+  return !(*this == x);
+}
+
+std::istream& operator>> (std::istream& stream, Matrix& x)
+{
+  stream >> x.height;
+  stream >> x.width;
+  
+  for (int i = 0; i < x.height * x.width; ++i)
+  {
+    stream >> x.data[i];
+  }
+
+  return stream;
+}
+
+std::ostream& operator<< (std::ostream& stream, const Matrix& x)
+{
+  for (int i = 0; i < x.height; ++i)
+  {
+    for (int j = 0; j < x.width; ++j)
+    {
+      stream << x.data[x.width * i + j] << ' ';
+    }
+    stream << '\n';
+  }
+
+  return stream;
+}
+
+Matrix:: ~Matrix()
+{
+  delete data;
 }

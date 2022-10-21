@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
-project(Date)
+project(Matrix)
 set(CMAKE_CXX_STANDARD 17)
-add_executable(Date main.cpp Date.h Date.cpp)
+add_executable(Matrix main.cpp Matrix.h Matrix.cpp)
 if (MSVC)
     target_compile_options(Date
             PRIVATE /W4          # warnings level

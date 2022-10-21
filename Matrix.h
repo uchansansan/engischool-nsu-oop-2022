@@ -10,15 +10,25 @@ public:
   Matrix operator- (const int &x) const;
   Matrix operator- (const Matrix &x) const;
   Matrix operator* (const int &x) const;
-  Matrix operator* (const float &x) const;
+  Matrix operator* (const double &x) const;
   Matrix operator* (const Matrix &x) const;
-  float* operator[] (const int &x) const;
+  double* operator[] (const int &x) const;
   Matrix& operator= (const Matrix &x);
   Matrix& operator+= (const int &x);
   Matrix& operator+= (const Matrix &x);
+  Matrix& operator-= (const int &x);
+  Matrix& operator-= (const Matrix &x);
+  Matrix& operator*= (const int &x);
+  Matrix& operator*= (const double &x);
+  Matrix& operator*= (const Matrix &x);
+  bool operator== (const Matrix& x) const;
+  bool operator!= (const Matrix& x) const;
+  friend std::istream& operator>> (std::istream& stream, Matrix& x);
+  friend std::ostream& operator<< (std::ostream& stream, const Matrix& x);
 
+  ~Matrix();
 
 private:
   int height, width;
-  float* data;
+  double* data;
 };
