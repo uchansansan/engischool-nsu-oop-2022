@@ -1,3 +1,5 @@
+#include <iostream>
+
 class Matrix
 {
 public:
@@ -5,20 +7,19 @@ public:
   Matrix(const int &y, const int &x);
   Matrix(const Matrix &x);
 
-  Matrix operator+ (const int &x) const;
+  Matrix operator+ (const double &x) const;
   Matrix operator+ (const Matrix &x) const;
-  Matrix operator- (const int &x) const;
+  Matrix operator- (const double &x) const;
   Matrix operator- (const Matrix &x) const;
-  Matrix operator* (const int &x) const;
   Matrix operator* (const double &x) const;
   Matrix operator* (const Matrix &x) const;
-  double* operator[] (const int &x) const;
+  const double* operator[] (const int &x) const;
+  double* operator[] (const int &x);
   Matrix& operator= (const Matrix &x);
-  Matrix& operator+= (const int &x);
+  Matrix& operator+= (const double &x);
   Matrix& operator+= (const Matrix &x);
-  Matrix& operator-= (const int &x);
+  Matrix& operator-= (const double &x);
   Matrix& operator-= (const Matrix &x);
-  Matrix& operator*= (const int &x);
   Matrix& operator*= (const double &x);
   Matrix& operator*= (const Matrix &x);
   bool operator== (const Matrix& x) const;
@@ -28,7 +29,7 @@ public:
 
   ~Matrix();
 
-private:
+public:
   int height, width;
   double* data;
 };

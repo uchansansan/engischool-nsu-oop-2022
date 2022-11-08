@@ -21,7 +21,7 @@ Matrix:: Matrix(const Matrix &x)
   }
 }
 
-Matrix Matrix::operator+(const int &x) const
+Matrix Matrix::operator+(const double &x) const
 {
   Matrix temp = *this;
   temp += x;
@@ -37,7 +37,7 @@ Matrix Matrix::operator+(const Matrix &x) const
   return temp;
 }
 
-Matrix Matrix::operator-(const int &x) const
+Matrix Matrix::operator-(const double &x) const
 {
   Matrix temp = *this;
   temp -= x;
@@ -49,14 +49,6 @@ Matrix Matrix::operator-(const Matrix &x) const
 {
   Matrix temp = *this;
   temp -= x;
-
-  return temp;
-}
-
-Matrix Matrix::operator*(const int &x) const
-{
-  Matrix temp = *this;
-  temp *= x;
 
   return temp;
 }
@@ -77,16 +69,27 @@ Matrix Matrix::operator*(const Matrix &x) const
   return temp;
 }
 
-double* Matrix:: operator[](const int& x) const
+const double* Matrix:: operator[](const int& x) const
 {
-  return &data[x];
+  return &data[x * width];
+}
+
+double* Matrix:: operator[](const int& x)
+{
+  return &data[x * width];
 }
 
 Matrix& Matrix::operator= (const Matrix &x)
 {
+  if (&x == this)
+  {
+    return *this;
+  }
+  else 
+  {
   height = x.height;
   width = x.width;
-  data = new double[width * height];
+  data = new double[height * width];
 
   for (int i = 0; i < width * height; ++i)
   {
@@ -94,9 +97,10 @@ Matrix& Matrix::operator= (const Matrix &x)
   }
   
   return *this;
+  }
 }
 
-Matrix& Matrix::operator+=(const int &x) 
+Matrix& Matrix::operator+=(const double &x) 
 {
   for (int i = 0; i < height * width; ++i)
   {
@@ -108,6 +112,11 @@ Matrix& Matrix::operator+=(const int &x)
 
 Matrix& Matrix::operator+=(const Matrix &x) 
 {
+  if (x.height != height || x.width != width)
+  {
+    throw "You cannot sum different-sized matrices!";
+  }
+
   for (int i = 0; i < height * width; ++i)
   {
     data[i] += x.data[i];
@@ -116,7 +125,7 @@ Matrix& Matrix::operator+=(const Matrix &x)
   return *this;
 }
 
-Matrix& Matrix::operator-=(const int &x)
+Matrix& Matrix::operator-=(const double &x)
 {
   for (int i = 0; i < height * width; ++i)
   {
@@ -128,19 +137,14 @@ Matrix& Matrix::operator-=(const int &x)
 
 Matrix& Matrix::operator-=(const Matrix &x)
 {
+  if (x.height != height || x.width != width)
+  {
+    throw "You cannot substract different-sized matrices!";
+  }
+
   for (int i = 0; i < height * width; ++i)
   {
     data[i] -= x.data[i];
-  }
-
-  return *this;
-}
-
-Matrix& Matrix::operator*=(const int &x)
-{
-  for (int i = 0; i < height * width; ++i)
-  {
-    data[i] *= x;
   }
 
   return *this;
@@ -158,10 +162,28 @@ Matrix& Matrix::operator*=(const double &x)
 
 Matrix& Matrix::operator*=(const Matrix &x)
 {
-  for (int i = 0; i < height * width; ++i)
+  if (x.height != width)
   {
-    data[i] *= x.data[i];
+    throw "You cannot multiply different-sized matrices!";
   }
+  
+  double* new_data = new double[height * x.width];
+
+  for (int i = 0; i < height; ++i)
+  {
+    for (int j = 0; j < x.width; ++j)
+    {
+      for (int k = 0; k < width; ++k)
+      {
+        new_data[i * x.width + j] += data[i * width + k] * x.data[k * x.width + j];
+      }
+    }
+  }
+
+  delete[] data;
+
+  data = new_data;
+  width = x.width;
 
   return *this;
 }
@@ -218,5 +240,5 @@ std::ostream& operator<< (std::ostream& stream, const Matrix& x)
 
 Matrix:: ~Matrix()
 {
-  delete data;
+  delete[] data;
 }
